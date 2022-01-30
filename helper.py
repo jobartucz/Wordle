@@ -3,6 +3,7 @@ from collections import defaultdict
 
 guesses_allowed = set()
 possible_answers = set()
+total_guesses = 1
 
 answer = [None,None,None,None,None]
 good_letters_no_pos = set()
@@ -65,10 +66,10 @@ def recalc():
 
     # now we have the new list of possible words
     possible_answers = set(new_possible_answers) # reset so we don't check already discarded ones
-    print("Possibilities left: ")
-    for w in sorted(possible_answers):
-        print(w,end=', ')
-    print()
+    # print("Possibilities left: ")
+    # for w in sorted(possible_answers):
+    #     print(w,end=', ')
+    # print()
 
     word_probs = dict()
     letter_counts = [defaultdict(int), defaultdict(int), defaultdict(int), defaultdict(int), defaultdict(int)]
@@ -98,23 +99,30 @@ def recalc():
             prob += letter_probs[i][c]
         word_probs[w] = prob
 
+    if len(possible_answers) == 1:
+        print ("The answer is " + list(possible_answers)[0])
+        return True
+
     i = 0
     for w in sorted(word_probs, key=word_probs.__getitem__, reverse=True):
         i += 1
         if i == 10:
             break
-        print(f"{w}: {word_probs[w]}")
+        print(f"{w}: {int(word_probs[w]*100/5)}%")
 
     return False
 
 while True:
     if recalc() == True:
+        print(f"It took you {total_guesses} total guesses.")
         break
 
     guess = input("What is your guess? ")
     while guess not in guesses_allowed:
         print("*** That is not in the list of allowed guesses. ***")
         guess = input("What is your guess? ")
+
+    total_guesses += 1
 
     for i, c in enumerate(guess):
         print(f"Type 1 if it was the correct letter in correct position, 2 if it was a correct letter in the wrong position, or 3 if the letter is not in the word")
