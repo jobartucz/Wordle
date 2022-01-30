@@ -1,5 +1,5 @@
+from functools import total_ordering
 from random import choice
-
 
 guesses_allowed = set()
 possible_answers = []
@@ -20,12 +20,16 @@ print("= means letter is in the correct position")
 
 # print(answer)
 
+total_guesses = 0
+
 guessed = False
 while guessed == False:
 
     guess = input("What is your guess? ")
     while guess not in guesses_allowed:
         guess = input("That guess is not allowed. What is your guess?")
+
+    total_guesses += 1
 
     print(guess)
     guessed = True
@@ -40,3 +44,5 @@ while guessed == False:
             print('^',end='')
             guessed = False
     print()
+
+print(f"It took you {total_guesses} total guesses.")
