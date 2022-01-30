@@ -125,7 +125,7 @@ while True:
     total_guesses += 1
 
     for i, c in enumerate(guess):
-        print(f"Type 1 if it was the correct letter in correct position, 2 if it was a correct letter in the wrong position, or 3 if the letter is not in the word")
+        print(f"Type 1 if it was the correct letter in correct position\n2 if it was a correct letter in the WRONG position, or\n3 if the letter is not in the word")
         ans = input(f"'{c}' at position {i+1} [1/2/3]: ")
         if ans == '1':
             answer[i] = c
