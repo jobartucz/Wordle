@@ -1,8 +1,7 @@
 # helper.py - helps you solve wordle problems
 from collections import defaultdict
 
-guesses_allowed = set()
-possible_answers = set()
+
 total_guesses = 1
 
 answer = [None,None,None,None,None]
@@ -10,6 +9,8 @@ good_letters_no_pos = set()
 good_letters_wrong_pos = [set(),set(),set(),set(),set()]
 bad_letters = set()
 
+guesses_allowed = set()
+possible_answers = set()
 with open("wordfiles/guesses_allowed.txt", "r") as f:
     for line in f:
         guesses_allowed.add(line.strip())
