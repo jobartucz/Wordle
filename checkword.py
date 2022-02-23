@@ -1,13 +1,11 @@
 # helper.py - helps you solve wordle problems
 from collections import defaultdict
 
-
-
 total_guesses = 1
 
-answer = [None,None,None,None,None]
+answer = [None, None, None, None, None]
 good_letters_no_pos = set()
-good_letters_wrong_pos = [set(),set(),set(),set(),set()]
+good_letters_wrong_pos = [set(), set(), set(), set(), set()]
 bad_letters = set()
 
 guesses_allowed = set()
@@ -27,6 +25,7 @@ while theword not in possible_answers:
     theword = input("What is the word? ")
 guess = "slate"
 
+
 def recalc():
 
     global possible_answers, guesses_allowed, answer, bad_letters, good_letters_no_pos
@@ -42,24 +41,26 @@ def recalc():
     for w in possible_answers:
 
         for i, c in enumerate(w):
-            if c in bad_letters: # discard all possibilities with letters that aren't in the word
+            if c in bad_letters:  # discard all possibilities with letters that aren't in the word
                 new_possible_answers.discard(w)
                 break
-            elif answer[i] and answer[i] != c: # discard all possibilities without letters in the right places
+            # discard all possibilities without letters in the right places
+            elif answer[i] and answer[i] != c:
                 new_possible_answers.discard(w)
                 break
-            elif c in good_letters_wrong_pos[i]: # alredy tried this letter in this position
+            # alredy tried this letter in this position
+            elif c in good_letters_wrong_pos[i]:
                 new_possible_answers.discard(w)
                 break
 
-
-    possible_answers = set(new_possible_answers) # reset so we don't check already discarded ones
+    # reset so we don't check already discarded ones
+    possible_answers = set(new_possible_answers)
     for w in possible_answers:
         # this is not perfect yet, could do more with positioning
         for l in good_letters_no_pos:
 
             # look for the letter in the empty spaces
-            found = False 
+            found = False
             for i, c in enumerate(w):
                 if answer[i]:
                     continue
@@ -68,20 +69,24 @@ def recalc():
                     break
 
             if found == False:
-                new_possible_answers.discard(w) # discard if the good letter is not in the missing spots
+                # discard if the good letter is not in the missing spots
+                new_possible_answers.discard(w)
                 break
 
     # now we have the new list of possible words
-    possible_answers = set(new_possible_answers) # reset so we don't check already discarded ones
+    # reset so we don't check already discarded ones
+    possible_answers = set(new_possible_answers)
     # print("Possibilities left: ")
     # for w in sorted(possible_answers):
     #     print(w,end=', ')
     # print()
 
     word_probs = dict()
-    letter_counts = [defaultdict(int), defaultdict(int), defaultdict(int), defaultdict(int), defaultdict(int)]
-    letter_sums = [0,0,0,0,0]
-    letter_probs = [defaultdict(float), defaultdict(float), defaultdict(float), defaultdict(float), defaultdict(float)]
+    letter_counts = [defaultdict(int), defaultdict(
+        int), defaultdict(int), defaultdict(int), defaultdict(int)]
+    letter_sums = [0, 0, 0, 0, 0]
+    letter_probs = [defaultdict(float), defaultdict(float), defaultdict(
+        float), defaultdict(float), defaultdict(float)]
 
     for w in possible_answers:
         for i, c in enumerate(w):
