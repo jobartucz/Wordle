@@ -1,29 +1,13 @@
+from ast import AsyncFunctionDef
 import requests
 from collections import defaultdict
+from random import randint
 
 server = "https://ctech-wordle-server.herokuapp.com/"
 # server = "http://localhost:5000"
 
-
-r = requests.post(server, json={
-    'command': 'allwords'
-})
-# , Response: {r.json()}")
-print(f"Status Code to get all words: {r.status_code}")
-
-allwords = set(r.json()['answers'])
-
-# r = requests.post(server, json={
-#     'command': 'reload'
-# })
-# print(f"Status Code to reload: {r.status_code}, Response: {r.json()}")
-
-r = requests.post(server, json={
-    'command': 'newid',
-    'nickname': 'jobartucz'
-})
-print(f"Status Code to get a new ID: {r.status_code}, Response: {r.json()}")
-userid = r.json()['userid']
+allwords = set()
+userid = ""
 
 
 def solveword(wordid):
@@ -125,6 +109,7 @@ def solveword(wordid):
             guess = sorted(
                 word_probs, key=word_probs.__getitem__, reverse=True)[0]
 
+        print(f"^^^^^^^ guessing: {guess} for {wordid}")
         r = requests.post(server, json={
             'command': 'guess',
             'userid': userid,
@@ -133,11 +118,13 @@ def solveword(wordid):
         })
 
         if r.status_code != 200:
+            print(f"ERROR: {r.status_code}")
             return f"ERROR: {r.status_code}"
         elif 'ERROR' in r.json():
             print(f"Status Code: {r.status_code}, Response: {r.json()}")
             return 'ERROR'
         else:
+            print(f"Status Code: {r.status_code}, Response: {r.json()}")
             response = r.json()['result']
 
         if response == "11111":
@@ -154,11 +141,45 @@ def solveword(wordid):
                 good_letters_no_pos.add(guess[i])
                 good_letters_wrong_pos[i].add(guess[i])
                 continue
-            else:
-                bad_letters.add(guess[i])
+
+        for i, c in enumerate(response):
+            if c == "3":
+                if guess[i] in answer or guess[i] in good_letters_no_pos:  # if it's just a duplicate for this word
+                    good_letters_wrong_pos[i].add(guess[i])
+                else:
+                    bad_letters.add(guess[i])
 
     print(f"??? FOUND: {guess}")
     return guess
+
+
+r = requests.post(server, json={
+    'command': 'allanswers'
+})
+# , Response: {r.json()}")
+print(f"Status Code to get all words: {r.status_code}")
+
+allwords = set(r.json()['allanswers'])
+
+# r = requests.post(server, json={
+#     'command': 'reload'
+# })
+# print(f"Status Code to reload: {r.status_code}, Response: {r.json()}")
+
+
+r = requests.post(server, json={
+    'command': 'newid',
+    'nickname': 'jobartucz ' + str(randint(1, 10000))
+})
+print(f"Status Code to get a new ID: {r.status_code}")
+userid = r.json()['userid']
+
+# r = requests.post(server, json={
+#     'command': 'setnickname',
+#     'nickname': 'Mr. Bartucz',
+#     'userid': userid
+# })
+# print(f"Status Code to set nickname: {r.status_code}, Response: {r.json()}")
 
 
 for i in range(10):
@@ -167,11 +188,14 @@ for i in range(10):
         'userid': userid
     })
 
+    # print(r)
+
     if r.status_code != 200:
         print(f"* * * ERROR! Status Code: {r.status_code}")
         break
     elif 'ERROR' in r.json():
-        print(f"Status Code: {r.status_code}, Response: {r.json()}")
+        print(
+            f"* * * ERROR newword status Code: {r.status_code}, Response: {r.json()}")
         break
     else:
         wordid = r.json()['wordid']
@@ -183,4 +207,9 @@ r = requests.post(server, json={
     'command': 'stats',
     'userid': userid
 })
-print(f"Status Code to get stats: {r.status_code}, Response: {r.json()}")
+if r.status_code != 200:
+    print(f"* * * ERROR! Status Code: {r.status_code}")
+elif 'ERROR' in r.json():
+    print(f"* * * ERROR! Status Code: {r.status_code}, Response: {r.json()}")
+else:
+    print(f"Status Code to get stats: {r.status_code}, Response: {r.json()}")
