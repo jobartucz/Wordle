@@ -1,9 +1,8 @@
-from ast import AsyncFunctionDef
 import requests
 from collections import defaultdict
 from random import randint
 
-server = "https://ctech-wordle-server.herokuapp.com/"
+server = "http://saturn.rochesterschools.org:5000"
 # server = "http://localhost:5000"
 
 allwords = set()
@@ -166,10 +165,17 @@ allwords = set(r.json()['allanswers'])
 # })
 # print(f"Status Code to reload: {r.status_code}, Response: {r.json()}")
 
+# print("--- Running cleanup ---")
+# r = requests.post(server, json={
+#     'command': 'cleanup',
+#     'userid': userid
+# })
+# print("--- Done cleanup ---")
+
 
 r = requests.post(server, json={
     'command': 'newid',
-    'nickname': 'jobartucz ' + str(randint(1, 10000))
+    'nickname': 'Mr. B ' + str(randint(1, 10000))
 })
 print(f"Status Code to get a new ID: {r.status_code}")
 userid = r.json()['userid']
@@ -182,7 +188,7 @@ userid = r.json()['userid']
 # print(f"Status Code to set nickname: {r.status_code}, Response: {r.json()}")
 
 
-for i in range(10):
+for i in range(5):
     r = requests.post(server, json={
         'command': 'newword',
         'userid': userid
@@ -202,6 +208,7 @@ for i in range(10):
 
     theanswer = solveword(wordid)
     # print(f"the answer for {wordid} is {theanswer}")
+
 
 r = requests.post(server, json={
     'command': 'stats',
